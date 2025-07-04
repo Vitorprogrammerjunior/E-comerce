@@ -83,6 +83,9 @@ const getProducts = asyncHandler(async (req, res) => {
       p.created_at,
       p.updated_at,
       p.images,
+      p.rating,
+      p.review_count,
+      p.is_featured,
       c.name as category_name
     FROM products p
     LEFT JOIN categories c ON p.category_id = c.id
@@ -116,8 +119,12 @@ const getProducts = asyncHandler(async (req, res) => {
       price: parseFloat(product.price),
       stock: product.stock,
       categoryId: product.category_id,
-      categoryName: product.category_name,
+      category: product.category_name,
       images: images,
+      image: images && images.length > 0 ? images[0] : null,
+      rating: parseFloat(product.rating) || 0,
+      reviews: parseInt(product.review_count) || 0,
+      featured: Boolean(product.is_featured),
       createdAt: product.created_at,
       updatedAt: product.updated_at
     };
@@ -153,6 +160,9 @@ const getProduct = asyncHandler(async (req, res) => {
       p.category_id,
       p.is_active,
       p.images,
+      p.rating,
+      p.review_count,
+      p.is_featured,
       p.created_at,
       p.updated_at,
       c.name as category_name
@@ -181,8 +191,12 @@ const getProduct = asyncHandler(async (req, res) => {
     price: parseFloat(product.price),
     stock: product.stock,
     categoryId: product.category_id,
-    categoryName: product.category_name,
+    category: product.category_name,
     images: images,
+    image: images && images.length > 0 ? images[0] : null,
+    rating: parseFloat(product.rating) || 0,
+    reviews: parseInt(product.review_count) || 0,
+    featured: Boolean(product.is_featured),
     createdAt: product.created_at,
     updatedAt: product.updated_at
   };
@@ -213,10 +227,13 @@ const getFeaturedProducts = asyncHandler(async (req, res) => {
         p.stock,
         p.category_id,
         p.images,
+        p.rating,
+        p.review_count,
+        p.is_featured,
         c.name as category_name
       FROM products p
       LEFT JOIN categories c ON p.category_id = c.id
-      WHERE p.is_active = 1
+      WHERE p.is_active = 1 AND p.is_featured = 1
       ORDER BY p.created_at DESC
       LIMIT ${validLimit}
     `;
@@ -235,8 +252,12 @@ const getFeaturedProducts = asyncHandler(async (req, res) => {
         price: parseFloat(product.price),
         stock: product.stock,
         categoryId: product.category_id,
-        categoryName: product.category_name,
-        images: Array.isArray(images) ? images : []
+        category: product.category_name,
+        images: Array.isArray(images) ? images : [],
+        image: images && images.length > 0 ? images[0] : null,
+        rating: parseFloat(product.rating) || 0,
+        reviews: parseInt(product.review_count) || 0,
+        featured: Boolean(product.is_featured)
       };
     });
 

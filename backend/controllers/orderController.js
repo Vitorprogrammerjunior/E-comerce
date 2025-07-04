@@ -46,7 +46,9 @@ const getOrderWithItems = async (orderId) => {
     taxAmount: parseFloat(order.tax_amount),
     shippingAmount: parseFloat(order.shipping_amount),
     total: parseFloat(order.total),
-    shippingAddress: JSON.parse(order.shipping_address),
+    shippingAddress: typeof order.shipping_address === 'string' 
+      ? JSON.parse(order.shipping_address) 
+      : order.shipping_address,
     items: items.map(item => ({
       productId: item.product_id,
       name: item.product_name,
@@ -91,7 +93,7 @@ const createOrder = asyncHandler(async (req, res) => {
     });
   }
 
-  if (!shippingAddress || !shippingAddress.street || !shippingAddress.city) {
+  if (!shippingAddress || (!shippingAddress.street && !shippingAddress.address) || !shippingAddress.city) {
     return res.status(400).json({
       success: false,
       message: 'Complete shipping address is required'
@@ -156,7 +158,7 @@ const createOrder = asyncHandler(async (req, res) => {
     taxAmount,
     shippingCost,
     finalTotal,
-    JSON.stringify(shippingAddress)
+    typeof shippingAddress === 'string' ? shippingAddress : JSON.stringify(shippingAddress)
   ]);
 
   const dbOrderId = orderResult.insertId;
@@ -186,8 +188,13 @@ const createOrder = asyncHandler(async (req, res) => {
 
   // Clear cart after successful order creation (only if payment succeeded)
   if (paymentStatus === 'paid') {
-    const clearCartQuery = `DELETE FROM cart_items WHERE user_id = ?`;
-    await query(clearCartQuery, [userId]);
+    try {
+      const clearCartQuery = `DELETE FROM cart_items WHERE user_id = ?`;
+      await query(clearCartQuery, [userId]);
+    } catch (error) {
+      console.warn('Failed to clear cart:', error.message);
+      // Continue execution even if cart clearing fails
+    }
   }
 
   res.status(201).json({
@@ -844,13 +851,19 @@ const processPayment = async ({ amount, method, details }) => {
   // Simulate payment processing delay
   await new Promise(resolve => setTimeout(resolve, 1000));
 
-  // Simulate payment success/failure (90% success rate)
-  const success = Math.random() > 0.1;
-
+  // For development/demo purposes, always succeed
+  const success = true;
+  
+  // Generate a transaction ID
+  const transactionId = `txn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  
+  console.log(`[MOCK PAYMENT] Processing payment of ${amount} via ${method}`);
+  console.log(`[MOCK PAYMENT] Transaction ID: ${transactionId}`);
+  
   return {
     success,
-    transactionId: success ? `txn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}` : null,
-    message: success ? 'Payment processed successfully' : 'Payment failed'
+    transactionId,
+    message: 'Payment processed successfully'
   };
 };
 
