@@ -1,8 +1,8 @@
 # Use Node.js 18 Alpine
 FROM node:18-alpine
 
-# Install curl for health checks
-RUN apk add --no-cache curl
+# Install curl and mysql client for health checks and database waiting
+RUN apk add --no-cache curl mysql-client
 
 # Set working directory
 WORKDIR /app
@@ -16,8 +16,11 @@ RUN npm ci --only=production
 # Copy the rest of the application code
 COPY . .
 
+# Make wait script executable
+RUN chmod +x wait-for-db.sh
+
 # Expose port 4000
 EXPOSE 4000
 
-# Start the application
-CMD ["npm", "run", "start"]
+# Start the application with database wait
+CMD ["./wait-for-db.sh", "db", "npm", "run", "start"]

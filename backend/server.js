@@ -70,9 +70,18 @@ app.use('*', (req, res) => {
 app.listen(PORT, async () => {
   console.log(`🚀 Server is running on port ${PORT}`);
   console.log(`📖 API Documentation: http://localhost:${PORT}/api/health`);
+  console.log(`🔧 Environment: ${process.env.NODE_ENV}`);
+  console.log(`🗄️  Database Host: ${process.env.DB_HOST}`);
+  console.log(`🗄️  Database Name: ${process.env.DB_NAME}`);
   
-  // Test database connection
-  await testConnection();
+  // Test database connection with retry logic
+  const dbConnection = await testConnection();
+  
+  if (dbConnection) {
+    console.log('🎉 Sistema inicializado com sucesso - banco conectado!');
+  } else {
+    console.log('⚠️  Sistema inicializado em modo mock - sem banco de dados');
+  }
 });
 
 module.exports = app;

@@ -27,24 +27,37 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 20,
   queueLimit: 0,
+  acquireTimeout: 60000,
+  timeout: 60000,
+  reconnect: true
 });
 
-// Função para testar conexão
-const testConnection = async () => {
-  try {
-    if (!config.database.host || !config.database.database) {
-      console.log('⚠️  Database configuration not complete. Using mock data.');
-      return null;
+// Função para aguardar e testar conexão com retry
+const testConnection = async (retries = 10, delay = 3000) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      if (!config.database.host || !config.database.database) {
+        console.log('⚠️  Database configuration not complete. Using mock data.');
+        return null;
+      }
+      
+      console.log(`🔄 Tentativa ${i + 1}/${retries} de conexão com MySQL...`);
+      const connection = await pool.getConnection();
+      console.log('✅ Conexão com MySQL estabelecida com sucesso');
+      connection.release();
+      return pool;
+    } catch (error) {
+      console.error(`❌ Tentativa ${i + 1} falhou:`, error.message);
+      
+      if (i === retries - 1) {
+        console.error('❌ Não foi possível conectar ao MySQL após todas as tentativas');
+        console.log('⚠️  Continuando com dados mock...');
+        return null;
+      }
+      
+      console.log(`⏳ Aguardando ${delay/1000}s antes da próxima tentativa...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
     }
-    
-    const connection = await pool.getConnection();
-    console.log('✅ Conexão com MySQL estabelecida com sucesso');
-    connection.release();
-    return pool;
-  } catch (error) {
-    console.error('❌ Erro ao conectar com MySQL:', error.message);
-    console.log('⚠️  Continuando com dados mock...');
-    return null;
   }
 };
 
