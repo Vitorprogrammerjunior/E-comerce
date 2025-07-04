@@ -16,11 +16,8 @@ RUN npm ci --only=production
 # Copy the rest of the application code
 COPY . .
 
-# Make wait script executable
-RUN chmod +x wait-for-db.sh
-
 # Expose port 4000
 EXPOSE 4000
 
-# Start the application with database wait
-CMD ["./wait-for-db.sh", "db", "npm", "run", "start"]
+# Start the application
+CMD ["npm", "run", "start"]

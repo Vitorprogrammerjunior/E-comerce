@@ -42,7 +42,7 @@ const pool = mysql.createPool({
 });
 
 // Função para aguardar e testar conexão com retry
-const testConnection = async (retries = 10, delay = 3000) => {
+const testConnection = async (retries = 20, delay = 5000) => {
   for (let i = 0; i < retries; i++) {
     try {
       if (!config.database.host || !config.database.database) {
@@ -53,10 +53,15 @@ const testConnection = async (retries = 10, delay = 3000) => {
       console.log(`🔄 Tentativa ${i + 1}/${retries} de conexão com MySQL...`);
       const connection = await pool.getConnection();
       console.log('✅ Conexão com MySQL estabelecida com sucesso');
+      
+      // Testar se o banco existe e tem tabelas
+      const [tables] = await connection.execute('SHOW TABLES');
+      console.log(`📊 Encontradas ${tables.length} tabelas no banco`);
+      
       connection.release();
       return pool;
     } catch (error) {
-      console.error(`❌ Tentativa ${i + 1} falhou:`, error.message);
+      console.error(`❌ Tentativa ${i + 1} falhou:`, error.code || error.message);
       
       if (i === retries - 1) {
         console.error('❌ Não foi possível conectar ao MySQL após todas as tentativas');
