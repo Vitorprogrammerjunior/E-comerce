@@ -1,52 +1,36 @@
-version: "3.8"
+# Docker Compose Ultra Simplificado
+# Versão que funciona na maioria dos casos
 
-networks:
-  ecommerce_network:
-    driver: bridge
+version: "3.8"
 
 services:
   db:
     image: mysql:8.0
     restart: always
-    networks:
-      - ecommerce_network
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: ecommerce
       MYSQL_USER: user
       MYSQL_PASSWORD: Vitor@56
-      MYSQL_ROOT_HOST: '%'
     volumes:
-      - db_data:/var/lib/mysql
+      - db_data_ultra:/var/lib/mysql
       - ./database:/docker-entrypoint-initdb.d
     ports:
       - "3306:3306"
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
-      timeout: 20s
-      retries: 15
-      interval: 10s
-      start_period: 120s
 
   backend:
     build: ./backend
-    networks:
-      - ecommerce_network
-    depends_on:
-      - db
     env_file: ./backend/.env
     ports:
       - "4000:4000"
     restart: always
     environment:
       - NODE_ENV=production
+    # Aguardar 60s antes de iniciar
+    entrypoint: ["sh", "-c", "sleep 60 && npm run start"]
 
   frontend:
     build: ./frontend
-    networks:
-      - ecommerce_network
-    depends_on:
-      - backend
     env_file: ./frontend/.env.production
     ports:
       - "80:3000"
@@ -55,4 +39,4 @@ services:
       - NODE_ENV=production
 
 volumes:
-  db_data:
+  db_data_ultra:
