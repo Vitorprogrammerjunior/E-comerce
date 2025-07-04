@@ -45,10 +45,15 @@ export const isValidPassword = (password: string): boolean => {
   return password.length >= 6;
 };
 
-export const calculateCartTotal = (items: any[]): number => {
+export const calculateCartTotal = (items: Array<{
+  price: number;
+  quantity: number;
+}>): number => {
   return items.reduce((total, item) => total + (item.price * item.quantity), 0);
 };
 
-export const getCartItemCount = (items: any[]): number => {
+export const getCartItemCount = (items: Array<{
+  quantity: number;
+}>): number => {
   return items.reduce((count, item) => count + item.quantity, 0);
 };

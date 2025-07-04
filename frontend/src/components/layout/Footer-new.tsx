@@ -89,7 +89,7 @@ export default function Footer() {
           </div>
 
           {/* Footer Links */}
-          {footerSections.map((section, index) => (
+          {footerSections.map((section) => (
             <div key={section.title}>
               <h3 className="text-lg font-semibold mb-6 text-white">
                 {section.title}

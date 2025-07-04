@@ -46,7 +46,7 @@ api.interceptors.response.use(
 // API functions
 export const apiClient = {
   // Products
-  getProducts: (params?: any) => api.get('/products', { params }),
+  getProducts: (params?: Record<string, unknown>) => api.get('/products', { params }),
   getProduct: (id: string) => api.get(`/products/${id}`),
   getFeaturedProducts: () => api.get('/products/featured'),
   getCategories: () => api.get('/products/categories'),
@@ -69,7 +69,22 @@ export const apiClient = {
   clearCart: () => api.delete('/cart'),
 
   // Orders
-  createOrder: (orderData: any) => api.post('/orders', orderData),
+  createOrder: (orderData: {
+    items: Array<{
+      productId: number;
+      quantity: number;
+      price: number;
+    }>;
+    total: number;
+    shippingAddress: {
+      street: string;
+      city: string;
+      state: string;
+      zipCode: string;
+      country: string;
+    };
+    paymentMethod: string;
+  }) => api.post('/orders', orderData),
   getOrders: () => api.get('/orders'),
   getOrder: (id: string) => api.get(`/orders/${id}`),
   cancelOrder: (id: string) => api.put(`/orders/${id}/cancel`),
