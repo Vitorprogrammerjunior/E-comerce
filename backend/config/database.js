@@ -35,10 +35,7 @@ const pool = mysql.createPool({
   database: config.database.database,
   waitForConnections: true,
   connectionLimit: 20,
-  queueLimit: 0,
-  acquireTimeout: 60000,
-  timeout: 60000,
-  reconnect: true
+  queueLimit: 0
 });
 
 // Função para aguardar e testar conexão com retry
