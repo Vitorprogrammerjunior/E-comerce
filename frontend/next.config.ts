@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
+    unoptimized: true,
     domains: [
       'images.unsplash.com',
       'via.placeholder.com',
