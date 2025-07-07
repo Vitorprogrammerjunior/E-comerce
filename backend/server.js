@@ -60,6 +60,12 @@ app.use(limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// Configurar charset UTF-8 para todas as respostas
+app.use((req, res, next) => {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  next();
+});
+
 // Routes
 app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
