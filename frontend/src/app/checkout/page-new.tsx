@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/store/cartStore';
 import { useAuthStore } from '@/store/authStore';
 import { useOrderStore } from '@/store/orderStore';
-import { useToast } from '@/store/toastStore';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { formatPrice } from '@/lib/utils';
@@ -31,7 +30,6 @@ export default function CheckoutPage() {
   const { items, total, clearCart } = useCartStore();
   const { user } = useAuthStore();
   const { addOrder } = useOrderStore();
-  const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(1); // 1: Shipping, 2: Payment, 3: Review
 
@@ -111,14 +109,10 @@ export default function CheckoutPage() {
       // Limpar carrinho
       clearCart();
       
-      // Show success message
-      toast.success('Pedido realizado!', 'Seu pedido foi processado com sucesso.');
-      
       // Redirecionar para confirmação
       router.push(`/order-confirmation/${orderId}`);
     } catch (error) {
       console.error('Erro ao processar pedido:', error);
-      toast.error('Erro no checkout', 'Não foi possível processar seu pedido. Tente novamente.');
     } finally {
       setIsLoading(false);
     }
@@ -142,37 +136,37 @@ export default function CheckoutPage() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Progress Steps */}
-        <div className="mb-6 sm:mb-8">
-          <div className="flex items-center justify-center space-x-4 sm:space-x-8">
+        <div className="mb-8">
+          <div className="flex items-center justify-center space-x-8">
             {[1, 2, 3].map((stepNumber) => (
               <div key={stepNumber} className="flex items-center">
-                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border-2 ${
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${
                   step >= stepNumber 
                     ? 'bg-blue-600 text-white border-blue-600' 
                     : 'bg-white text-gray-400 border-gray-300'
                 }`}>
                   {step > stepNumber ? (
-                    <CheckCircleIcon className="w-4 h-4 sm:w-6 sm:h-6" />
+                    <CheckCircleIcon className="w-6 h-6" />
                   ) : (
-                    <span className="text-xs sm:text-sm font-medium">{stepNumber}</span>
+                    stepNumber
                   )}
                 </div>
                 {stepNumber < 3 && (
-                  <div className={`w-12 sm:w-20 h-0.5 ml-2 sm:ml-4 ${
+                  <div className={`w-20 h-0.5 ml-4 ${
                     step > stepNumber ? 'bg-blue-600' : 'bg-gray-300'
                   }`} />
                 )}
               </div>
             ))}
           </div>
-          <div className="flex justify-center space-x-4 sm:space-x-8 mt-2">
-            <span className={`text-xs sm:text-sm ${step >= 1 ? 'text-blue-600 font-medium' : 'text-gray-500'}`}>
+          <div className="flex justify-center space-x-8 mt-2">
+            <span className={step >= 1 ? 'text-blue-600 font-medium' : 'text-gray-500'}>
               Entrega
             </span>
-            <span className={`text-xs sm:text-sm ${step >= 2 ? 'text-blue-600 font-medium' : 'text-gray-500'}`}>
+            <span className={step >= 2 ? 'text-blue-600 font-medium' : 'text-gray-500'}>
               Pagamento
             </span>
-            <span className={`text-xs sm:text-sm ${step >= 3 ? 'text-blue-600 font-medium' : 'text-gray-500'}`}>
+            <span className={step >= 3 ? 'text-blue-600 font-medium' : 'text-gray-500'}>
               Revisão
             </span>
           </div>

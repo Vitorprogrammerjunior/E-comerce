@@ -3,26 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 import { useAuthStore } from '@/store/authStore';
-import api from '@/lib/api';
-import { apiClient } from '@/lib/api';
+import { useOrderStore } from '@/store/orderStore';
+import { useToast } from '@/store/toastStore';
 import Button from '@/components/ui/Button';
+import { formatPrice } from '@/lib/utils';
 import { ShoppingBagIcon, EyeIcon } from '@heroicons/react/24/outline';
-
-interface Order {
-  id: string;
-  total: number;
-  status: string;
-  createdAt: string;
-  items: Array<{
-    productId: number;
-    name: string;
-    price: number;
-    quantity: number;
-    image: string;
-  }>;
-  paymentMethod: string;
-}
 
 const getStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
@@ -61,8 +48,8 @@ const getStatusText = (status: string) => {
 export default function OrdersPage() {
   const router = useRouter();
   const { user } = useAuthStore();
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { orders, cancelOrder } = useOrderStore();
+  const toast = useToast();
   const [isCancelling, setIsCancelling] = useState<string | null>(null);
 
   useEffect(() => {
@@ -70,23 +57,9 @@ export default function OrdersPage() {
       router.push('/login');
       return;
     }
-    fetchOrders();
   }, [user, router]);
 
-  const fetchOrders = async () => {
-    try {
-      const response = await api.get('/orders');
-      if (response.data.success) {
-        setOrders(response.data.orders || []);
-      }
-    } catch (error) {
-      console.error('Error fetching orders:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleCancelOrder = async (orderId: string) => {
+  const handleCancelOrder = (orderId: string) => {
     if (!confirm('Tem certeza que deseja cancelar este pedido? Esta ação não pode ser desfeita.')) {
       return;
     }
@@ -94,190 +67,219 @@ export default function OrdersPage() {
     setIsCancelling(orderId);
     
     try {
-      const response = await apiClient.cancelOrder(orderId);
-      if (response.data.success) {
-        // Update the order in the state
-        setOrders(prevOrders => 
-          prevOrders.map(order => 
-            order.id === orderId 
-              ? { ...order, status: 'cancelled' } 
-              : order
-          )
-        );
-        
-        // Show success message
-        const orderNumber = orderId.split('-')[1] || orderId;
-        alert(`Pedido #${orderNumber} cancelado com sucesso!`);
-      }
+      // Remove order from local storage using Zustand store
+      cancelOrder(orderId);
+      
+      // Show success message
+      toast.success('Pedido cancelado!', 'O pedido foi removido com sucesso.');
     } catch (error) {
       console.error('Error cancelling order:', error);
-      alert('Não foi possível cancelar o pedido. Tente novamente ou contate o suporte.');
+      toast.error('Erro ao cancelar', 'Não foi possível cancelar o pedido. Tente novamente.');
     } finally {
       setIsCancelling(null);
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4">Carregando pedidos...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Meus Pedidos</h1>
-        <Button onClick={() => router.push('/products')}>
-          Continuar Comprando
-        </Button>
-      </div>
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4 sm:mb-0">Meus Pedidos</h1>
+            <Button onClick={() => router.push('/products')} className="w-full sm:w-auto">
+              Continuar Comprando
+            </Button>
+          </div>
 
-      {orders.length === 0 ? (
-        <div className="text-center py-12">
-          <ShoppingBagIcon className="h-24 w-24 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-            Nenhum pedido encontrado
-          </h2>
-          <p className="text-gray-600 mb-8">
-            Você ainda não fez nenhum pedido. Que tal explorar nossos produtos?
-          </p>
-          <Button onClick={() => router.push('/products')}>
-            Explorar Produtos
-          </Button>
-        </div>
-      ) : (
-        <div className="space-y-6">
-          {orders.map((order) => (
-            <div key={order.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-              {/* Order Header */}
-              <div className="bg-gray-50 px-6 py-4 border-b">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-6">
-                    <div>
-                      <p className="text-sm text-gray-600">Pedido</p>
-                      <p className="font-medium">#{order.id}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Data</p>
-                      <p className="font-medium">
-                        {new Date(order.createdAt).toLocaleDateString('pt-BR')}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Total</p>
-                      <p className="font-medium">R$ {order.total.toFixed(2)}</p>
+          {orders.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="text-center py-16"
+            >
+              <ShoppingBagIcon className="h-24 w-24 text-gray-300 mx-auto mb-6" />
+              <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+                Nenhum pedido encontrado
+              </h2>
+              <p className="text-gray-600 mb-8 max-w-md mx-auto">
+                Você ainda não fez nenhum pedido. Que tal explorar nossos produtos e fazer sua primeira compra?
+              </p>
+              <Button onClick={() => router.push('/products')} size="lg">
+                Explorar Produtos
+              </Button>
+            </motion.div>
+          ) : (
+            <div className="space-y-6">
+              {orders.map((order, index) => (
+                <motion.div
+                  key={order.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                  className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200"
+                >
+                  {/* Order Header */}
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-5 border-b border-gray-100">
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-8 mb-4 lg:mb-0">
+                        <div>
+                          <p className="text-sm text-gray-600 font-medium">Pedido</p>
+                          <p className="text-lg font-bold text-gray-900">#{order.id.slice(-8).toUpperCase()}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600 font-medium">Data</p>
+                          <p className="text-lg font-semibold text-gray-900">
+                            {new Date(order.createdAt).toLocaleDateString('pt-BR', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric'
+                            })}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600 font-medium">Total</p>
+                          <p className="text-lg font-bold text-blue-600">{formatPrice(order.total)}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-4">
+                        <span className={`inline-flex items-center px-3 py-2 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
+                          <div className="w-2 h-2 rounded-full mr-2 bg-current opacity-60"></div>
+                          {getStatusText(order.status)}
+                        </span>
+                        <Button
+                          onClick={() => router.push(`/order-confirmation/${order.id}`)}
+                          variant="outline"
+                          size="sm"
+                          className="hidden sm:flex"
+                        >
+                          <EyeIcon className="h-4 w-4 mr-2" />
+                          Ver Detalhes
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-4 mt-4 sm:mt-0">
-                    <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
-                      {getStatusText(order.status)}
-                    </span>
-                    <Button
-                      onClick={() => router.push(`/order-confirmation/${order.id}`)}
-                      variant="outline"
-                      size="sm"
-                    >
-                      <EyeIcon className="h-4 w-4 mr-1" />
-                      Ver Detalhes
-                    </Button>
-                  </div>
-                </div>
-              </div>
 
-              {/* Order Items */}
-              <div className="px-6 py-4">
-                <div className="space-y-4">
-                  {order.items.slice(0, 3).map((item, index) => (
-                    <div key={index} className="flex items-center space-x-4">
-                      {item.image ? (
-                        <Image
-                          src={item.image}
-                          alt={item.name}
-                          width={64}
-                          height={64}
-                          className="w-16 h-16 object-cover rounded"
-                        />
-                      ) : (
-                        <div className="w-16 h-16 bg-gray-200 flex items-center justify-center rounded">
-                          <span className="text-gray-400 text-xs">Sem imagem</span>
+                  {/* Order Items */}
+                  <div className="px-6 py-6">
+                    <div className="grid gap-4">
+                      {order.items.slice(0, 3).map((item, itemIndex) => (
+                        <div key={itemIndex} className="flex items-center space-x-4 p-3 bg-gray-50 rounded-xl">
+                          <div className="relative w-16 h-16 bg-white rounded-lg overflow-hidden shadow-sm">
+                            {item.image ? (
+                              <Image
+                                src={item.image}
+                                alt={item.name}
+                                fill
+                                className="object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                                <span className="text-gray-400 text-xs font-medium">Sem imagem</span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-gray-900 line-clamp-1 text-lg">
+                              {item.name}
+                            </h3>
+                            <p className="text-sm text-gray-600 mt-1">
+                              Quantidade: <span className="font-medium">{item.quantity}</span> • 
+                              Preço unitário: <span className="font-medium">{formatPrice(item.price)}</span>
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-lg font-bold text-gray-900">
+                              {formatPrice(item.price * item.quantity)}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                      
+                      {order.items.length > 3 && (
+                        <div className="text-center py-3 bg-blue-50 rounded-xl">
+                          <p className="text-sm text-blue-700 font-medium">
+                            + {order.items.length - 3} item(s) adicional(is)
+                          </p>
                         </div>
                       )}
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-gray-900 truncate">
-                          {item.name}
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          Quantidade: {item.quantity} • R$ {item.price.toFixed(2)} cada
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-medium">
-                          R$ {(item.price * item.quantity).toFixed(2)}
-                        </p>
-                      </div>
                     </div>
-                  ))}
-                  
-                  {order.items.length > 3 && (
-                    <div className="text-center py-2">
-                      <p className="text-sm text-gray-600">
-                        e mais {order.items.length - 3} item(s)...
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
+                  </div>
 
-              {/* Order Actions */}
-              <div className="bg-gray-50 px-6 py-4 border-t">
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                  <div className="text-sm text-gray-600 mb-2 sm:mb-0">
-                    Pagamento: {order.paymentMethod.replace('_', ' ')}
+                  {/* Order Actions */}
+                  <div className="bg-gray-50 px-6 py-4 border-t border-gray-100">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-3 sm:space-y-0">
+                      <div className="flex items-center space-x-4 text-sm text-gray-600">
+                        <span className="flex items-center">
+                          <span className="font-medium">Endereço:</span>
+                          <span className="ml-1">
+                            {order.shippingAddress.city}, {order.shippingAddress.state}
+                          </span>
+                        </span>
+                        {order.estimatedDelivery && (
+                          <span className="flex items-center">
+                            <span className="font-medium">Entrega prevista:</span>
+                            <span className="ml-1">
+                              {new Date(order.estimatedDelivery).toLocaleDateString('pt-BR')}
+                            </span>
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="flex space-x-2">
+                        {order.status === 'delivered' && (
+                          <Button size="sm" variant="outline">
+                            Avaliar Produtos
+                          </Button>
+                        )}
+                        
+                        {(order.status === 'pending' || order.status === 'processing') && (
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => handleCancelOrder(order.id)}
+                            loading={isCancelling === order.id}
+                            className="text-red-600 hover:bg-red-50 border-red-200 hover:border-red-300"
+                          >
+                            {isCancelling === order.id ? 'Cancelando...' : 'Cancelar Pedido'}
+                          </Button>
+                        )}
+                        
+                        <Button
+                          size="sm"
+                          onClick={() => router.push(`/order-confirmation/${order.id}`)}
+                          className="bg-blue-600 hover:bg-blue-700"
+                        >
+                          Ver Pedido Completo
+                        </Button>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex space-x-2">
-                    {order.status.toLowerCase() === 'delivered' && (
-                      <Button size="sm" variant="outline">
-                        Avaliar Produtos
-                      </Button>
-                    )}
-                    {(order.status.toLowerCase() === 'pending' || order.status.toLowerCase() === 'processing') && (
-                      <Button 
-                        size="sm" 
-                        variant="danger"
-                        onClick={() => handleCancelOrder(order.id)}
-                        loading={isCancelling === order.id}
-                        className="text-red-600 hover:bg-red-50 border border-red-200"
-                      >
-                        {isCancelling === order.id ? 'Cancelando...' : 'Cancelar Pedido'}
-                      </Button>
-                    )}
-                    <Button
-                      size="sm"
-                      onClick={() => router.push(`/order-confirmation/${order.id}`)}
-                    >
-                      Ver Pedido Completo
-                    </Button>
-                  </div>
-                </div>
-              </div>
+                </motion.div>
+              ))}
             </div>
-          ))}
-        </div>
-      )}
+          )}
 
-      {/* Back to Profile */}
-      <div className="mt-8 text-center">
-        <Button
-          onClick={() => router.push('/profile')}
-          variant="outline"
-        >
-          Voltar ao Perfil
-        </Button>
+          {/* Back to Profile */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="mt-12 text-center"
+          >
+            <Button
+              onClick={() => router.push('/profile')}
+              variant="outline"
+              size="lg"
+            >
+              Voltar ao Perfil
+            </Button>
+          </motion.div>
+        </motion.div>
       </div>
     </div>
   );

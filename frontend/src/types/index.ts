@@ -3,12 +3,15 @@ export interface Product {
   name: string;
   description: string;
   price: number;
+  compare_price?: number;
   category: string;
   image: string | null;
   images: string[];
   stock: number;
   rating: number;
   reviews: number;
+  review_count?: number;
+  sold_count?: number;
   featured: boolean;
 }
 

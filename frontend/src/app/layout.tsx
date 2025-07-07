@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import PageTransition from '@/components/layout/PageTransition';
+import ToastProvider from '@/components/providers/ToastProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -29,6 +30,7 @@ export default function RootLayout({
             </PageTransition>
           </main>
           <Footer />
+          <ToastProvider />
         </div>
       </body>
     </html>

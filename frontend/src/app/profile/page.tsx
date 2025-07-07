@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '@/store/authStore';
+import { useOrderStore } from '@/store/orderStore';
 import api from '@/lib/api';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -27,6 +28,7 @@ interface UserProfile {
 export default function ProfilePage() {
   const router = useRouter();
   const { user, logout } = useAuthStore();
+  const { orders } = useOrderStore();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -114,6 +116,14 @@ export default function ProfilePage() {
     router.push('/');
   };
 
+  // Calculate order statistics
+  const orderStats = {
+    total: orders.length,
+    pending: orders.filter(order => order.status === 'pending').length,
+    delivered: orders.filter(order => order.status === 'delivered').length,
+    totalSpent: orders.reduce((sum, order) => sum + order.total, 0)
+  };
+
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -146,6 +156,75 @@ export default function ProfilePage() {
       >
         Minha Conta
       </motion.h1>
+
+      {/* Order Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500"
+        >
+          <div className="flex items-center">
+            <ShoppingBagIcon className="h-8 w-8 text-blue-500" />
+            <div className="ml-4">
+              <p className="text-2xl font-bold text-gray-900">{orderStats.total}</p>
+              <p className="text-gray-600">Total de Pedidos</p>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-500"
+        >
+          <div className="flex items-center">
+            <div className="h-8 w-8 bg-yellow-500 rounded-full flex items-center justify-center">
+              <span className="text-white font-bold">⏳</span>
+            </div>
+            <div className="ml-4">
+              <p className="text-2xl font-bold text-gray-900">{orderStats.pending}</p>
+              <p className="text-gray-600">Pedidos Pendentes</p>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500"
+        >
+          <div className="flex items-center">
+            <div className="h-8 w-8 bg-green-500 rounded-full flex items-center justify-center">
+              <span className="text-white font-bold">✓</span>
+            </div>
+            <div className="ml-4">
+              <p className="text-2xl font-bold text-gray-900">{orderStats.delivered}</p>
+              <p className="text-gray-600">Pedidos Entregues</p>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500"
+        >
+          <div className="flex items-center">
+            <div className="h-8 w-8 bg-purple-500 rounded-full flex items-center justify-center">
+              <span className="text-white font-bold">💰</span>
+            </div>
+            <div className="ml-4">
+              <p className="text-2xl font-bold text-gray-900">R$ {orderStats.totalSpent.toFixed(2)}</p>
+              <p className="text-gray-600">Total Gasto</p>
+            </div>
+          </div>
+        </motion.div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Sidebar */}
