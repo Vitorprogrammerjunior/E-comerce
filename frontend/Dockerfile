@@ -17,6 +17,10 @@ COPY tsconfig.json ./
 COPY postcss.config.mjs ./
 COPY eslint.config.mjs ./
 
+# Copy environment files
+COPY .env.production* ./
+COPY .env.local* ./
+
 # Copy source code
 COPY public ./public
 COPY src ./src
