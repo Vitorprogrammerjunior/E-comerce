@@ -1,102 +1,166 @@
-# E-commerce Completo - Next.js + Express
+# 🛍️ E-commerce System
 
-Um projeto completo de e-commerce desenvolvido com Next.js (frontend) e Express (backend), incluindo autenticação JWT, carrinho de compras, checkout, sistema de pedidos e muito mais.
+[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black.svg)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue.svg)](https://www.typescriptlang.org/)
+[![MySQL](https://img.shields.io/badge/MySQL-8+-orange.svg)](https://www.mysql.com/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## 🚀 Tecnologias Utilizadas
+Sistema completo de e-commerce moderno desenvolvido com Next.js 15 e Express.js, incluindo autenticação JWT, carrinho de compras, checkout, sistema de pedidos e painel administrativo.
 
-### Frontend (Next.js)
-- **Next.js 15** - Framework React com App Router
-- **TypeScript** - Tipagem estática
-- **TailwindCSS** - Framework CSS utilitário
-- **Zustand** - Gerenciamento de estado
-- **Axios** - Cliente HTTP
-- **Heroicons** - Ícones
-- **Next/Image** - Otimização de imagens
+## ✨ Funcionalidades
 
-### Backend (Express)
-- **Node.js** - Runtime JavaScript
-- **Express** - Framework web
-- **MySQL** - Banco de dados relacional
-- **mysql2** - Driver MySQL para Node.js
-- **JWT** - Autenticação
-- **bcryptjs** - Hash de senhas
-- **CORS** - Cross-Origin Resource Sharing
-- **Helmet** - Segurança HTTP
-- **Rate Limiting** - Limitação de taxa
-- **Dotenv** - Variáveis de ambiente
+- 🛒 **Carrinho de Compras** - Adicionar, remover e atualizar produtos
+- 🔐 **Autenticação JWT** - Sistema seguro de login/registro
+- 💳 **Checkout Completo** - Processo de compra integrado
+- � **Painel Admin** - Gerenciamento de produtos e pedidos
+- 🔍 **Busca e Filtros** - Encontre produtos facilmente
+- 📱 **Responsivo** - Interface adaptável para todos os dispositivos
+- ⚡ **Performance** - Otimizado para velocidade e SEO
+- 🔒 **Segurança** - Proteção contra ataques comuns
+
+## 🚀 Stack Tecnológica
+
+### Frontend
+- **[Next.js 15](https://nextjs.org/)** - Framework React com App Router
+- **[TypeScript](https://www.typescriptlang.org/)** - Tipagem estática
+- **[TailwindCSS](https://tailwindcss.com/)** - Framework CSS utilitário
+- **[Zustand](https://zustand-demo.pmnd.rs/)** - Gerenciamento de estado
+- **[Axios](https://axios-http.com/)** - Cliente HTTP
+- **[Framer Motion](https://www.framer.com/motion/)** - Animações
+
+### Backend
+- **[Express.js](https://expressjs.com/)** - Framework web para Node.js
+- **[MySQL](https://www.mysql.com/)** - Banco de dados relacional
+- **[JWT](https://jwt.io/)** - Autenticação stateless
+- **[bcryptjs](https://www.npmjs.com/package/bcryptjs)** - Hash de senhas
+- **[Helmet](https://helmetjs.github.io/)** - Segurança HTTP
+- **[CORS](https://www.npmjs.com/package/cors)** - Cross-Origin Resource Sharing
 
 ## 📁 Estrutura do Projeto
 
 ```
 E-commerce/
-├── frontend/                 # Aplicação Next.js
-│   ├── src/
-│   │   ├── app/             # Pages e layouts (App Router)
-│   │   │   ├── cart/        # Página do carrinho
-│   │   │   ├── checkout/    # Página de checkout
-│   │   │   ├── help/        # Central de ajuda
-│   │   │   ├── login/       # Página de login
-│   │   │   ├── privacy/     # Política de privacidade
-│   │   │   ├── products/    # Listagem de produtos
-│   │   │   ├── product/     # Detalhes do produto
-│   │   │   ├── profile/     # Perfil do usuário
-│   │   │   ├── register/    # Página de registro
-│   │   │   ├── returns/     # Trocas e devoluções
-│   │   │   ├── shipping/    # Informações de entrega
-│   │   │   ├── terms/       # Termos de uso
-│   │   │   └── order-confirmation/ # Confirmação de pedido
-│   │   ├── components/      # Componentes reutilizáveis
-│   │   │   ├── cart/        # Componentes do carrinho
-│   │   │   ├── layout/      # Header, Footer
-│   │   │   ├── product/     # Componentes de produto
-│   │   │   └── ui/          # Componentes de interface
-│   │   ├── hooks/           # Hooks customizados
-│   │   ├── lib/             # Utilitários e configurações
-│   │   ├── store/           # Stores Zustand
-│   │   └── types/           # Tipos TypeScript
-│   ├── public/              # Arquivos estáticos
-│   └── ...
-├── backend/                 # API Express
-│   ├── routes/              # Rotas da API
-│   ├── controllers/         # Controladores
-│   ├── middleware/          # Middlewares
-│   ├── config/              # Configurações
-│   └── ...
-└── README.md
-```
+├── 📁 docs/                  # Documentação completa
+│   ├── README.md            # Documentação principal
+│   ├── API.md               # Documentação da API
+│   ├── INSTALLATION.md      # Guia de instalação
+│   ├── DEPLOYMENT.md        # Guia de deployment
+│   └── CONTRIBUTING.md      # Guia de contribuição
+├── 📁 frontend/             # Aplicação Next.js
+│   ├── 📁 src/
+│   │   ├── 📁 app/         # Pages e layouts (App Router)
+│   │   │   ├── cart/       # Página do carrinho
+│   │   │   ├── checkout/   # Página de checkout
+│   │   │   ├── products/   # Listagem de produtos
+│   │   │   ├── profile/    # Perfil do usuário
+│   │   │   └── ...         # Outras páginas
+│   │   ├── 📁 components/  # Componentes reutilizáveis
+│   │   │   ├── cart/       # Componentes do carrinho
+│   │   │   ├── layout/     # Header, Footer, etc.
+│   │   │   ├── product/    # Componentes de produto
+│   │   │   └── ui/         # Componentes de interface
+│   │   ├── 📁 hooks/       # Custom hooks
+│   │   ├── 📁 lib/         # Utilitários e configurações
+│   │   ├── 📁 store/       # Estado global (Zustand)
+│   │   └── 📁 types/       # Tipos TypeScript
+│   └── 📁 public/          # Arquivos estáticos
+├── 📁 backend/              # API Express.js
+│   ├── 📁 config/          # Configurações
+│   ├── 📁 controllers/     # Controladores
+│   ├── 📁 middleware/      # Middlewares
+│   ├── 📁 routes/          # Rotas da API
+│   └── 📁 utils/           # Utilitários
+├── 📁 database/            # Scripts SQL
+│   ├── 01-schema.sql       # Estrutura do banco
+│   ├── 02-seed-data.sql    # Dados de exemplo
+│   └── ...                 # Outros scripts
+├── 📁 scripts/             # Scripts de automação
+│   ├── setup.js            # Configuração inicial
+│   ├── dev.js              # Ambiente de desenvolvimento
+│   ├── build.js            # Build de produção
+│   └── ...                 # Outros scripts
+└── 📄 package.json         # Configuração do projeto
+## ⚡ Início Rápido
 
-## 🔧 Instalação e Configuração
-
-### Pré-requisitos
-- Node.js 18+ 
-- npm ou yarn
-- MySQL 8.0+
-
-### 1. Clone o repositório
+### 1. Configuração Inicial
 ```bash
-git clone <repository-url>
-cd E-commerce
+# Clone o repositório
+git clone https://github.com/seu-usuario/ecommerce-system.git
+cd ecommerce-system
+
+# Configuração automática
+npm run setup
 ```
 
-### 2. Configuração do Backend
+### 2. Desenvolvimento
 ```bash
-cd backend
-npm install
+# Iniciar em modo de desenvolvimento
+npm run dev
+
+# Ou iniciar separadamente
+npm run dev:backend  # Backend na porta 4000
+npm run dev:frontend # Frontend na porta 3000
 ```
 
-Crie o arquivo `.env` baseado no `.env.example`:
+### 3. Produção
+```bash
+# Build de produção
+npm run build
+
+# Iniciar em produção
+npm start
+```
+
+### 4. Acessar a Aplicação
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:4000
+- **Documentação**: http://localhost:3000/docs
+
+## 🛠️ Scripts Disponíveis
+
+| Script | Descrição |
+|--------|-----------|
+| `npm run setup` | Configuração inicial do projeto |
+| `npm run dev` | Inicia desenvolvimento (backend + frontend) |
+| `npm run build` | Build de produção |
+| `npm run test` | Executa todos os testes |
+| `npm run clean` | Limpa arquivos temporários |
+| `npm run lint` | Executa linting |
+| `npm run format` | Formata código com Prettier |
+| `npm run type-check` | Verifica tipos TypeScript |
+
+## 🔧 Configuração
+
+### Variáveis de Ambiente
+
+#### Backend (.env)
 ```env
+# Server
 PORT=4000
-FRONTEND_URL=http://localhost:3000
-JWT_SECRET=seu_jwt_secret_aqui
 NODE_ENV=development
+FRONTEND_URL=http://localhost:3000
 
-# Database Configuration - MySQL
+# Database
 DB_HOST=localhost
 DB_PORT=3306
 DB_USER=root
-DB_PASSWORD=sua_senha_mysql
+DB_PASSWORD=sua_senha
 DB_NAME=ecommerce
+
+# JWT
+JWT_SECRET=seu_jwt_secret_super_seguro
+JWT_EXPIRES_IN=7d
+```
+
+#### Frontend (.env.local)
+```env
+# API
+NEXT_PUBLIC_API_URL=http://localhost:4000
+
+# App
+NEXT_PUBLIC_APP_NAME=E-commerce
+NEXT_PUBLIC_APP_VERSION=1.0.0
 ```
 
 ### 3. Configuração do Banco de Dados
@@ -260,49 +324,100 @@ O projeto é totalmente responsivo e funciona em:
 ### Hooks Customizados
 - **useFetch** - Hook para requisições HTTP
 
+## 🧪 Testes
+
+```bash
+# Executar todos os testes
+npm test
+
+# Testes do backend
+npm run test:backend
+
+# Testes do frontend
+npm run test:frontend
+
+# Testes end-to-end
+npm run test:e2e
+
+# Coverage
+npm run test:coverage
+```
+
+## 🐳 Docker
+
+```bash
+# Build das imagens
+npm run docker:build
+
+# Iniciar containers
+npm run docker:up
+
+# Parar containers
+npm run docker:down
+
+# Ver logs
+npm run docker:logs
+```
+
+## 📚 Documentação
+
+- **[Documentação Completa](./docs/README.md)** - Visão geral do sistema
+- **[API Reference](./docs/API.md)** - Documentação da API REST
+- **[Guia de Instalação](./docs/INSTALLATION.md)** - Instruções detalhadas
+- **[Guia de Deploy](./docs/DEPLOYMENT.md)** - Deploy para produção
+- **[Guia de Contribuição](./docs/CONTRIBUTING.md)** - Como contribuir
+
 ## 🚀 Deploy
 
-### Frontend (Vercel)
+### Vercel (Recomendado para Frontend)
 ```bash
-cd frontend
+# Instalar Vercel CLI
+npm i -g vercel
+
+# Deploy
 vercel --prod
 ```
 
-### Backend (Railway/Heroku)
+### Railway (Recomendado para Backend)
 ```bash
-cd backend
-# Configurar variáveis de ambiente
-# Fazer deploy
+# Instalar Railway CLI
+npm i -g @railway/cli
+
+# Deploy
+railway deploy
 ```
 
-## 🔮 Próximos Passos
+### Docker
+```bash
+# Build e deploy com Docker
+docker-compose up --build -d
+```
 
-### Banco de Dados
-- [x] Integração com MySQL
-- [x] Schema e relacionamentos
-- [x] Dados de exemplo (seed)
+## 🔒 Segurança
 
-### Pagamentos
-- [ ] Integração com Stripe
-- [ ] Integração com PagSeguro/Mercado Pago
-- [ ] Processamento de pagamentos reais
+- ✅ **Autenticação JWT** com refresh tokens
+- ✅ **Bcrypt** para hash de senhas
+- ✅ **Helmet** para headers de segurança
+- ✅ **Rate Limiting** contra DDoS
+- ✅ **CORS** configurado adequadamente
+- ✅ **SQL Injection** prevenido com queries parametrizadas
+- ✅ **XSS** prevenido com sanitização
+- ✅ **CSRF** tokens implementados
 
-### Funcionalidades Avançadas
-- [ ] Sistema de avaliações
-- [ ] Wishlist
-- [ ] Cupons de desconto
-- [ ] Sistema de notificações
-- [ ] Chat de suporte
+## 📊 Monitoramento
 
-### Admin Dashboard
-- [ ] Painel administrativo
-- [ ] Gestão de produtos
-- [ ] Relatórios e analytics
+- **Logs estruturados** com Winston
+- **Health checks** automatizados
+- **Métricas de performance** com PM2
+- **Error tracking** com Sentry (opcional)
+- **Uptime monitoring** com Uptimerobot (opcional)
 
-## 🤝 Contribuição
+## 🤝 Contribuindo
+
+Contribuições são sempre bem-vindas! Veja o [Guia de Contribuição](./docs/CONTRIBUTING.md) para mais detalhes.
 
 1. Fork o projeto
-2. Crie sua feature branch (`git checkout -b feature/AmazingFeature`)
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
 3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
 4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
@@ -311,10 +426,29 @@ cd backend
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-## 📞 Contato
+## 👥 Autores
 
-Se você tiver dúvidas ou sugestões sobre o projeto, entre em contato!
+- **Vitor Vagmaker** - *Desenvolvimento inicial* - [@vitorvagmaker](https://github.com/vitorvagmaker)
+
+## 🙏 Agradecimentos
+
+- [Next.js](https://nextjs.org/) pela excelente documentação
+- [Express.js](https://expressjs.com/) pela simplicidade
+- [TailwindCSS](https://tailwindcss.com/) pelo design system
+- [Vercel](https://vercel.com/) pela plataforma de deploy
+- Comunidade open source em geral
+
+## 📞 Suporte
+
+Se você tiver alguma dúvida ou problema, sinta-se à vontade para:
+
+- Abrir uma [Issue](https://github.com/seu-usuario/ecommerce-system/issues)
+- Entrar em contato via [email](mailto:contato@seusite.com)
+- Consultar a [documentação](./docs/README.md)
 
 ---
 
-**Desenvolvido com ❤️ usando Next.js e Express**
+<div align="center">
+  <p>Feito com ❤️ por <a href="https://github.com/vitorvagmaker">Vitor Vagmaker</a></p>
+  <p>⭐ Não se esqueça de dar uma star no projeto!</p>
+</div>

@@ -1,0 +1,86 @@
+{
+  "name": "ecommerce-system",
+  "version": "1.0.0",
+  "description": "Sistema completo de e-commerce com Next.js e Express.js",
+  "main": "index.js",
+  "scripts": {
+    "setup": "node scripts/setup.js",
+    "dev": "node scripts/dev.js",
+    "build": "node scripts/build.js",
+    "test": "node scripts/test.js",
+    "clean": "node scripts/clean.js",
+    "deploy": "node scripts/deploy.js",
+    "backup": "node scripts/backup.js",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:backend": "cd backend && npm start",
+    "start:frontend": "cd frontend && npm start",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build:frontend": "cd frontend && npm run build",
+    "lint": "cd frontend && npm run lint",
+    "lint:fix": "cd frontend && npm run lint:fix",
+    "type-check": "cd frontend && npx tsc --noEmit",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "test:backend": "cd backend && npm test",
+    "test:frontend": "cd frontend && npm test",
+    "test:e2e": "cd frontend && npm run test:e2e",
+    "db:migrate": "cd backend && node scripts/migrate.js",
+    "db:seed": "cd backend && node scripts/seed.js",
+    "db:reset": "cd backend && node scripts/reset.js",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "production:setup": "npm run clean && npm run install:all && npm run build",
+    "production:start": "npm run start",
+    "health:check": "node scripts/health-check.js"
+  },
+  "keywords": [
+    "ecommerce",
+    "nextjs",
+    "express",
+    "mysql",
+    "typescript",
+    "tailwindcss",
+    "jwt",
+    "react"
+  ],
+  "author": "Vitor Vagmaker",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-username/ecommerce-system.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/ecommerce-system/issues"
+  },
+  "homepage": "https://github.com/your-username/ecommerce-system#readme",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.1.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "npm run type-check && npm run test"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
+  }
+}
